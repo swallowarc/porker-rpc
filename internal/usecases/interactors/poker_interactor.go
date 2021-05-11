@@ -54,10 +54,20 @@ func (bi *pokerInteractor) Enter(ctx context.Context, roomID room.ID, loginID st
 		return nil, xerrors.Errorf("failed to ReadStreamLatest: %w", err)
 	}
 
-	ps.Ballots = append(ps.Ballots, &porker.Ballot{
-		LoginId: loginID,
-		Point:   porker.Point_POINT_UNKNOWN,
-	})
+	var isExists bool
+	for _, ballot := range ps.Ballots {
+		if ballot.LoginId == loginID {
+			isExists = true
+			break
+		}
+	}
+
+	if !isExists {
+		ps.Ballots = append(ps.Ballots, &porker.Ballot{
+			LoginId: loginID,
+			Point:   porker.Point_POINT_UNKNOWN,
+		})
+	}
 
 	if err := bi.pokerRepo.Update(ctx, ps); err != nil {
 		return nil, xerrors.Errorf("failed to Update: %w", err)

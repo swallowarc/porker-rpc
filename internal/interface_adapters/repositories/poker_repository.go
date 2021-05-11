@@ -51,12 +51,7 @@ func (r *PokerRepository) Create(ctx context.Context, loginID string) (room.ID, 
 		RoomId:        roomID.String(),
 		MasterLoginId: loginID,
 		State:         porker.RoomState_ROOM_STATE_TURN_DOWN,
-		Ballots: []*porker.Ballot{
-			{
-				LoginId: loginID,
-				Point:   porker.Point_POINT_UNKNOWN,
-			},
-		},
+		Ballots:       []*porker.Ballot{},
 	}
 	if err := r.Update(ctx, situation); err != nil { // UpdateでもStreamがなければ新規作成される
 		return "", err
