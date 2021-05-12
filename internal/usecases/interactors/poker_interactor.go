@@ -101,24 +101,48 @@ func (bi *pokerInteractor) Voting(ctx context.Context, roomID room.ID, loginID s
 		return xerrors.Errorf("failed to ReadStreamLatest: %w", err)
 	}
 
+	if ps.State != porker.RoomState_ROOM_STATE_TURN_DOWN {
+		return xerrors.Errorf(
+			"cannot vote in any state other than TURN_DOWN. room_id: %s, state: %s", roomID, ps.State)
+	}
+
+	var isExists bool
+	var numOfVoted int
 	for i, ballot := range ps.Ballots {
 		if ballot.LoginId == loginID {
 			ps.Ballots[i].Point = point
-			if err := bi.pokerRepo.Update(ctx, ps); err != nil {
-				return xerrors.Errorf("failed to bt Update: %w", err)
-			}
-
+			isExists = true
 			return nil
+		}
+		if ballot.Point != porker.Point_POINT_UNKNOWN {
+			numOfVoted++
 		}
 	}
 
-	return xerrors.Errorf("login_id: %s is not found in room_id: %s", loginID, roomID)
+	if !isExists {
+		return xerrors.Errorf("login_id: %s is not found in room_id: %s", loginID, roomID)
+	}
+
+	if numOfVoted == len(ps.Ballots) {
+		ps.State = porker.RoomState_ROOM_STATE_OPEN
+	}
+
+	if err := bi.pokerRepo.Update(ctx, ps); err != nil {
+		return xerrors.Errorf("failed to bt Update: %w", err)
+	}
+
+	return nil
 }
 
 func (bi *pokerInteractor) VoteCounting(ctx context.Context, roomID room.ID, loginID string) error {
 	_, ps, err := bi.pokerRepo.ReadStreamLatest(ctx, roomID)
 	if err != nil {
 		return xerrors.Errorf("failed to ReadStreamLatest: %w", err)
+	}
+
+	if ps.State != porker.RoomState_ROOM_STATE_TURN_DOWN {
+		return xerrors.Errorf(
+			"cannot vote counting in any state other than TURN_DOWN. room_id: %s, state: %s", roomID, ps.State)
 	}
 
 	ps.State = porker.RoomState_ROOM_STATE_OPEN
