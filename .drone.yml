@@ -1,0 +1,54 @@
+kind: pipeline
+type: kubernetes
+name: porker-rpc
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  event:
+    - push
+    - tag
+    - pull_request
+
+steps:
+  - name: test
+    image: golang:1.16
+    commands:
+      - sleep 5
+      - make test
+    environment:
+      REDIS_HOST_PORT: "cache:6379"
+
+  - name: publish
+    image: plugins/docker
+    environment:
+      NETRC_CONFIG:
+        from_secret: netrc_config
+    settings:
+      mtu: 1450
+      username:
+        from_secret: harbor_id
+      password:
+        from_secret: harbor_pass
+      repo: core.harbor.swallowarc.work/porker/porker-rpc
+      registry: core.harbor.swallowarc.work
+      tags:
+        - latest
+      build_args_from_env:
+        - NETRC_CONFIG
+    when:
+      branch:
+        - dev
+        - main
+        - feature/*
+      event:
+        - push
+        - tag
+
+services:
+  - name: cache
+    image: redis
+    commands:
+      - redis-server --appendonly yes --requirepass password
