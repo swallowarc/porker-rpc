@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/go-redis/redis/v8 v8.8.2
-	github.com/golang/mock v1.1.1
+	github.com/golang/mock v1.5.0
 	github.com/google/uuid v1.1.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
