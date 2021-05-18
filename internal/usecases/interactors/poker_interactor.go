@@ -86,12 +86,31 @@ func (bi *pokerInteractor) Leave(ctx context.Context, roomID room.ID, loginID st
 	if err != nil {
 		return xerrors.Errorf("failed to ListMembers: %w", err)
 	}
-	if len(members) != 0 {
+	if len(members) == 0 {
+		if err := bi.pokerRepo.Delete(ctx, roomID); err != nil {
+			return xerrors.Errorf("failed to Delete: %w", err)
+		}
 		return nil
 	}
-	if err := bi.pokerRepo.Delete(ctx, roomID); err != nil {
-		return xerrors.Errorf("failed to Delete: %w", err)
+
+	// まだRoomに人がいる場合は退室者をSituationから削除
+	_, ps, err := bi.pokerRepo.ReadStreamLatest(ctx, roomID)
+	if err != nil {
+		return xerrors.Errorf("failed to ReadStreamLatest: %w", err)
 	}
+
+	newBallots := make([]*porker.Ballot, 0, len(ps.Ballots))
+	for _, b := range ps.Ballots {
+		if b.LoginId != loginID {
+			newBallots = append(newBallots, b)
+		}
+	}
+
+	ps.Ballots = newBallots
+	if err := bi.pokerRepo.Update(ctx, ps); err != nil {
+		return xerrors.Errorf("failed to bt Update: %w", err)
+	}
+
 	return nil
 }
 
