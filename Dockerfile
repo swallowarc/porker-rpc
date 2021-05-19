@@ -7,11 +7,14 @@ COPY . .
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
-ARG NETRC_CONFIG
+ARG GITHUB_KEY
 
 # Build
-RUN echo $NETRC_CONFIG > $HOME/.netrc
-RUN chmod 600 $HOME/.netrc
+RUN mkdir -p /root/.ssh
+RUN echo "$GITHUB_KEY" > /root/.ssh/id_rsa
+RUN echo "StrictHostKeyChecking no" > /root/.ssh/config
+RUN chmod 400 /root/.ssh/*
+RUN git config --global url."git@github.com:swallowarc".insteadOf "https://github.com/swallowarc"
 RUN make
 
 # runtime image

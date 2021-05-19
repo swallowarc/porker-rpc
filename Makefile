@@ -11,7 +11,8 @@ LDFLAGS := -ldflags="-s -w -X \"main.Version=$(VERSION)\" -X \"main.Revision=$(R
 GOOS = "linux"
 GOARCH = "amd64"
 GOCMD = go
-GOBUILD = GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOCMD) build
+GOPRIVATE = github.com/swallowarc/*
+GOBUILD = GOPRIVATE=$(GOPRIVATE) GOOS=$(GOOS) GOARCH=$(GOARCH) $(GOCMD) build
 GOCLEAN = $(GOCMD) clean
 GOTEST = $(GOCMD) test
 GOGET = $(GOCMD) get

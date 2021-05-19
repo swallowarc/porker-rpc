@@ -24,8 +24,8 @@ steps:
   - name: publish
     image: plugins/docker
     environment:
-      NETRC_CONFIG:
-        from_secret: netrc_config
+      GITHUB_KEY:
+        from_secret: GITHUB_KEY
     settings:
       mtu: 1450
       username:
@@ -37,7 +37,7 @@ steps:
       tags:
         - latest
       build_args_from_env:
-        - NETRC_CONFIG
+        - GITHUB_KEY
     when:
       branch:
         - dev
