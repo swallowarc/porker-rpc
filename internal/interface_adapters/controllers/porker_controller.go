@@ -112,7 +112,7 @@ func (c *porkerController) LeaveRoom(ctx context.Context, req *porker.LeaveRoomR
 
 func (c *porkerController) Voting(ctx context.Context, req *porker.VotingRequest) (*porker.NoBody, error) {
 	if err := c.pokerInteractor.Voting(ctx, room.ID(req.RoomId), req.Ballot.LoginId, req.Ballot.Point); err != nil {
-		return nil, xerrors.Errorf("failed to Attack: %w", err)
+		return nil, xerrors.Errorf("failed to Voting: %w", err)
 	}
 
 	return &porker.NoBody{}, nil

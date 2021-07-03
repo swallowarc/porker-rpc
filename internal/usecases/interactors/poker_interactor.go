@@ -126,14 +126,17 @@ func (bi *pokerInteractor) Voting(ctx context.Context, roomID room.ID, loginID s
 	}
 
 	var isExists bool
-	var numOfVoted int
+	var votedCount, notVoterCount int
 	for _, ballot := range ps.Ballots {
 		if ballot.LoginId == loginID {
 			ballot.Point = point
 			isExists = true
 		}
 		if ballot.Point != porker.Point_POINT_UNKNOWN {
-			numOfVoted++
+			votedCount++
+		}
+		if ballot.Point == porker.Point_NOT_VOTE {
+			notVoterCount++
 		}
 	}
 
@@ -141,7 +144,10 @@ func (bi *pokerInteractor) Voting(ctx context.Context, roomID room.ID, loginID s
 		return xerrors.Errorf("login_id: %s is not found in room. room_id: %s", loginID, roomID)
 	}
 
-	if numOfVoted == len(ps.Ballots) {
+	switch len(ps.Ballots) {
+	case notVoterCount:
+		// 全員 not voter の場合はOpenしない
+	case votedCount:
 		ps.State = porker.RoomState_ROOM_STATE_OPEN
 	}
 

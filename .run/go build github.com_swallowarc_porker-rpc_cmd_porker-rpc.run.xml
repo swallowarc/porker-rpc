@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="porker-rpc" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="porker-rpc" />
+    <working_directory value="$PROJECT_DIR$/../porker-rpc" />
+    <envs>
+      <env name="REDIS_HOST_PORT" value="redis:6379" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="github.com/swallowarc/porker-rpc/cmd/porker-rpc" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/../porker-rpc/cmd/porker-rpc/main.go" />
+    <method v="2" />
+  </configuration>
+</component>
