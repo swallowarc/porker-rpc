@@ -29,12 +29,6 @@ func NewPokerListener(roomID room.ID, loginID string, pokerRepo ports.PokerRepos
 }
 
 func (l *pokerListener) Listen(ctx context.Context) (*porker.PokerSituation, error) {
-	var (
-		newMsgID string
-		ps       *porker.PokerSituation
-		err      error
-	)
-
 	isExists, err := l.pokerRepo.IsExistsInRoom(ctx, l.roomID, l.loginID)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to IsExistsInRoom: %w", err)
@@ -43,19 +37,18 @@ func (l *pokerListener) Listen(ctx context.Context) (*porker.PokerSituation, err
 		return nil, LeftError
 	}
 
+	var ps *porker.PokerSituation
 	if l.lastMessageID == "" {
-		newMsgID, ps, err = l.pokerRepo.ReadStreamLatest(ctx, l.roomID)
+		l.lastMessageID, ps, err = l.pokerRepo.ReadStreamLatest(ctx, l.roomID)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to ReadStreamLatest: %w", err)
 		}
 	} else {
-		newMsgID, ps, err = l.pokerRepo.ReadStream(ctx, l.roomID, l.lastMessageID)
+		l.lastMessageID, ps, err = l.pokerRepo.ReadStream(ctx, l.roomID, l.lastMessageID)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to ReadStream: %w", err)
 		}
 	}
-
-	l.lastMessageID = newMsgID
 
 	return ps, nil
 }

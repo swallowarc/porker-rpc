@@ -36,6 +36,7 @@ steps:
       registry: core.harbor.swallowarc.work
       tags:
         - latest
+        - ${DRONE_TAG}
       build_args_from_env:
         - GITHUB_KEY
     when:
@@ -44,7 +45,6 @@ steps:
         - main
         - feature/*
       event:
-        - push
         - tag
 
 services:
