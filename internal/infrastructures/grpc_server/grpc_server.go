@@ -16,6 +16,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
+	health "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 )
@@ -141,6 +142,8 @@ func (s *grpcServer) newServer() *grpc.Server {
 	)
 
 	s.controllerRegister.Register(server)
+
+	health.RegisterHealthServer(server, newHealthHandler())
 
 	if s.isDevelop {
 		reflection.Register(server)
