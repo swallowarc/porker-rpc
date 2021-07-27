@@ -17,13 +17,11 @@ RUN chmod 400 /root/.ssh/*
 RUN git config --global url."git@github.com:swallowarc".insteadOf "https://github.com/swallowarc"
 RUN make
 
-# Health check
-RUN GRPC_HEALTH_PROBE_VERSION=v0.4.4 && \
-  wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
-  chmod +x /bin/grpc_health_probe
-
 # runtime image
 FROM alpine:3.13.5
 RUN apk --no-cache add ca-certificates
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.4 && \
+  wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+  chmod +x /bin/grpc_health_probe
 COPY --from=builder /go/src/github.com/swallowarc/porker-rpc/bin /bin
 ENTRYPOINT ["/bin/porker-rpc"]
