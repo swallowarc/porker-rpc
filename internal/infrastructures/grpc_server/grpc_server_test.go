@@ -23,7 +23,7 @@ func TestGrpcServer_RunGRPCServer(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to new zap logger: %v", err)
 	}
-	srv := NewGRPCServer(zapLogger, "18080", true, fakeRegister{}, func() {}, func() {})
+	srv := NewGRPCServer(zapLogger, "18080", true, ControllerRegisters{fakeRegister{}}, func() {}, func() {})
 
 	ctx2, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()

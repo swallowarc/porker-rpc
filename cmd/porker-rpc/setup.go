@@ -23,8 +23,11 @@ func setup() grpc_server.GRPCServer {
 
 	// interface_adapters
 	controller := controllers.NewPorkerController(zapLogger, iFactory)
-	// grpc_service_register
-	grpcServiceRegister := grpc_server.NewControllerRegister(controller)
+	// grpc_controller_register
+	grpcControllerRegisters := grpc_server.ControllerRegisters{
+		grpc_server.NewControllerRegister(controller),
+		grpc_server.NewHealthRegister(gwFactory.MemDBClient()),
+	}
 
 	// initializer & closer
 	init := func() {
@@ -39,7 +42,7 @@ func setup() grpc_server.GRPCServer {
 		zapLogger,
 		env.Server.PORT,
 		env.Server.IsDevelopment,
-		grpcServiceRegister,
+		grpcControllerRegisters,
 		init,
 		closer,
 	)

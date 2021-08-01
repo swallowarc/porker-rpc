@@ -16,7 +16,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
-	health "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 )
@@ -29,17 +28,18 @@ type (
 	ControllerRegister interface {
 		Register(grpcServer grpc.ServiceRegistrar)
 	}
+	ControllerRegisters []ControllerRegister
 
 	InitFunc   func()
 	CloserFunc func()
 
 	grpcServer struct {
-		logger             *zap.Logger
-		port               string
-		isDevelop          bool
-		controllerRegister ControllerRegister
-		initFunction       InitFunc
-		closerFunction     CloserFunc
+		logger              *zap.Logger
+		port                string
+		isDevelop           bool
+		controllerRegisters ControllerRegisters
+		initFunction        InitFunc
+		closerFunction      CloserFunc
 	}
 )
 
@@ -56,17 +56,17 @@ func NewGRPCServer(
 	logger *zap.Logger,
 	port string,
 	isDevelop bool,
-	controllerRegister ControllerRegister,
+	controllerRegisters ControllerRegisters,
 	initFunction InitFunc,
 	closerFunction CloserFunc,
 ) GRPCServer {
 	return &grpcServer{
-		logger:             logger,
-		port:               port,
-		isDevelop:          isDevelop,
-		controllerRegister: controllerRegister,
-		initFunction:       initFunction,
-		closerFunction:     closerFunction,
+		logger:              logger,
+		port:                port,
+		isDevelop:           isDevelop,
+		controllerRegisters: controllerRegisters,
+		initFunction:        initFunction,
+		closerFunction:      closerFunction,
 	}
 }
 
@@ -141,9 +141,9 @@ func (s *grpcServer) newServer() *grpc.Server {
 		grpc.KeepaliveParams(kasp),
 	)
 
-	s.controllerRegister.Register(server)
-
-	health.RegisterHealthServer(server, newHealthHandler())
+	for _, c := range s.controllerRegisters {
+		c.Register(server)
+	}
 
 	if s.isDevelop {
 		reflection.Register(server)
