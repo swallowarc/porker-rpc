@@ -1,0 +1,14 @@
+version: '3'
+services:
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./data/redis:/data"
+  envoy:
+    image: envoyproxy/envoy-dev:2f54f365a0279bc25b696be1b212b5e8374f54b3
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml

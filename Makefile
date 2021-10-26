@@ -36,8 +36,14 @@ REDIS_HOST_PORT?=localhost:6379
 .PHONY: build setup-tools upgrade-grpc mock-clean mock-gen vet test docker/build
 build:
 	$(GOBUILD) -a -tags netgo -installsuffix netgo $(LDFLAGS) -o bin/ -v ./...
-setup-tools:
+setup/tools:
 	$(GOINSTALL) github.com/golang/mock/mockgen@v1.5.0
+setup/service:
+ifeq ($(shell uname),Linux)
+	$(DOCKER_COMPOSE_CMD) -f ./docker/docker-compose.yaml -f ./docker/docker-compose.override.yaml up -d
+else
+	$(DOCKER_COMPOSE_CMD) -f ./docker/docker-compose.yaml up -d
+endif
 upgrade-grpc:
 	$(GOGET) -u github.com/swallowarc/porker-proto
 	$(GOMOD) tidy

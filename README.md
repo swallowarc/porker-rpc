@@ -6,7 +6,7 @@ It works by communicating with frontend application implemented in the Flutter.
 ## Related repositories
 
 - https://github.com/swallowarc/porker-proto
-- https://github.com/swallowarc/porker-frontend
+- https://github.com/swallowarc/porker-front
 
 ## Getting Started
 
