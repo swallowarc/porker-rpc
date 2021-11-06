@@ -24,6 +24,7 @@ GOINSTALL = $(GOCMD) install
 # build parameters
 GRPC_PORT ?= 50051
 DOCKER_CMD = docker
+DOCKER_COMPOSE_CMD = docker-compose
 DOCKER_BUILD = $(DOCKER_CMD) build
 DOCKER_REGISTRY = swallowarc/porker-rpc
 DOCKER_USER ?= fake_user
