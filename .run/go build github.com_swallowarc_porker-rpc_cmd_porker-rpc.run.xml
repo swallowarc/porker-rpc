@@ -3,7 +3,8 @@
     <module name="porker-rpc" />
     <working_directory value="$PROJECT_DIR$/../porker-rpc" />
     <envs>
-      <env name="REDIS_HOST_PORT" value="redis:6379" />
+      <env name="REDIS_HOST_PORT" value="localhost:6379" />
+      <env name="REDIS_PASSWORD" value="" />
     </envs>
     <kind value="PACKAGE" />
     <package value="github.com/swallowarc/porker-rpc/cmd/porker-rpc" />
