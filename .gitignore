@@ -22,4 +22,4 @@
 
 .envrc
 
-docker/data/
+docker/data/redis/dump.rdb
